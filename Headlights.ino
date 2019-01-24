@@ -12,8 +12,43 @@
 
 // Basic state machine for different programs
 typedef enum STATE {
-  KNIGHT_RIDER = 0
+  KNIGHT_RIDER = 0,
+  SOMETHING_ELSE
 };
+
+const CHSVPalette16 somethingElsePalette(
+  CHSV(0, 0, 0),            //BLACK
+  CHSV(0, 0, 255),          //WHITE
+  CHSV(0, 255, 255),        //RED
+  CHSV(32, 255, 255),       //ORANGE  
+  CHSV(64, 255, 255),       //YELLOW
+  CHSV(96, 255, 255),       //GREEN
+  CHSV(128, 255, 255),      //AQUA
+  CHSV(160, 255, 255),      //BLUE
+  CHSV(192, 255, 255),      //PURPLE
+  CHSV(224, 255, 255),      //PINK
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255)         
+
+);
+
+typedef struct Frame {
+  long delay;
+  uint8_t data[NUM_LEDS];
+};
+
+// Remember, delay is in microseconds!!!
+const Frame frames[] = {
+  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+  {1000000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
+  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+};
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Globals
@@ -23,6 +58,8 @@ CRGB leds[NUM_LEDS];
 STATE currentState = KNIGHT_RIDER;
 // Time tracking
 long lastTime = 0;
+
+void loopSomethingElse(long elapsed);
 
 ///////////////////////////////////////////////////////////////////////////////
 // LET'S DO THIS THING!
@@ -42,14 +79,53 @@ void loop() {
   long elapsed = (currentTime - lastTime);
   lastTime = currentTime;
 
+  int potValue = analogRead(A0);
+  if (potValue < 1) {
+    currentState = KNIGHT_RIDER;
+  } else {
+    currentState = SOMETHING_ELSE;
+  }
+
+  currentState = KNIGHT_RIDER;
   switch (currentState) {
     case KNIGHT_RIDER:
       loopKnightRider(elapsed);
+      break;
+    case SOMETHING_ELSE:
+      loopSomethingElse(elapsed);
       break;
   }
 
   // So we don't update too crazy fast
   delay(1);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Something Else
+//
+//
+
+
+
+
+const char numFrames = 3;
+
+int currentFrame = 0;
+int frameTime = 0;
+
+void loopSomethingElse(long elapsed) {
+  frameTime += elapsed;
+  if (frameTime > frames[currentFrame].delay) {
+    frameTime = 0;
+    currentFrame = (currentFrame + 1) % numFrames;
+  }
+  // Update all the pixels from the palette
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = ColorFromPalette(somethingElsePallet, frames[currentFrame].data[i] * 16);
+  }
+
+  // Show it
+  FastLED.show();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,7 +141,7 @@ const float krSpeed = 1000000;
 const float krDimTime = 20;
 // The colors to use
 // Note: Heat Colors is only from 0-240
-const CRGBPalette16 krPalette = HeatColors_p;
+const CRGBPalette16  krPalette = HeatColors_p;
 // Maximum color index for the "hot" pixel
 const uint8_t krMaxColor = 128;
 
