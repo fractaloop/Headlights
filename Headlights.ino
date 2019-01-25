@@ -16,40 +16,6 @@ typedef enum STATE {
   SOMETHING_ELSE
 };
 
-const CHSVPalette16 somethingElsePalette(
-  CHSV(0, 0, 0),            //BLACK
-  CHSV(0, 0, 255),          //WHITE
-  CHSV(0, 255, 255),        //RED
-  CHSV(32, 255, 255),       //ORANGE  
-  CHSV(64, 255, 255),       //YELLOW
-  CHSV(96, 255, 255),       //GREEN
-  CHSV(128, 255, 255),      //AQUA
-  CHSV(160, 255, 255),      //BLUE
-  CHSV(192, 255, 255),      //PURPLE
-  CHSV(224, 255, 255),      //PINK
-  CHSV(0, 255, 255),
-  CHSV(0, 255, 255),
-  CHSV(0, 255, 255),
-  CHSV(0, 255, 255),
-  CHSV(0, 255, 255),
-  CHSV(0, 255, 255)         
-
-);
-
-typedef struct Frame {
-  long delay;
-  uint8_t data[NUM_LEDS];
-};
-
-// Remember, delay is in microseconds!!!
-const Frame frames[] = {
-  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-  {1000000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
-  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
-};
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // Globals
 // Our LEDs
@@ -104,12 +70,39 @@ void loop() {
 // Something Else
 //
 //
+const CHSVPalette16 somethingElsePalette(
+  CHSV(0, 0, 0),            //BLACK
+  CHSV(0, 0, 255),          //WHITE
+  CHSV(0, 255, 255),        //RED
+  CHSV(32, 255, 255),       //ORANGE  
+  CHSV(64, 255, 255),       //YELLOW
+  CHSV(96, 255, 255),       //GREEN
+  CHSV(128, 255, 255),      //AQUA
+  CHSV(160, 255, 255),      //BLUE
+  CHSV(192, 255, 255),      //PURPLE
+  CHSV(224, 255, 255),      //PINK
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255),
+  CHSV(0, 255, 255)         
 
+);
 
+typedef struct Frame {
+  long delay;
+  uint8_t data[NUM_LEDS];
+};
 
+// Remember, delay is in microseconds!!!
+const Frame frames[] = {
+  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+  {1000000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
+  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+};
 
 const char numFrames = 3;
-
 int currentFrame = 0;
 int frameTime = 0;
 
