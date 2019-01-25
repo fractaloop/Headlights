@@ -52,7 +52,7 @@ void loop() {
     currentState = SOMETHING_ELSE;
   }
 
-  currentState = KNIGHT_RIDER;
+  currentState = SOMETHING_ELSE;
   switch (currentState) {
     case KNIGHT_RIDER:
       loopKnightRider(elapsed);
@@ -71,16 +71,16 @@ void loop() {
 //
 //
 const CHSVPalette16 somethingElsePalette(
-  CHSV(0, 0, 0),            //BLACK
-  CHSV(0, 0, 255),          //WHITE
-  CHSV(0, 255, 255),        //RED
-  CHSV(32, 255, 255),       //ORANGE  
-  CHSV(64, 255, 255),       //YELLOW
-  CHSV(96, 255, 255),       //GREEN
-  CHSV(128, 255, 255),      //AQUA
-  CHSV(160, 255, 255),      //BLUE
-  CHSV(192, 255, 255),      //PURPLE
-  CHSV(224, 255, 255),      //PINK
+  CHSV(0, 0, 0),            //  0  BLACK
+  CHSV(0, 0, 255),          //  1  WHITE
+  CHSV(0, 255, 255),        //  2  RED
+  CHSV(32, 255, 255),       //  3  ORANGE  
+  CHSV(64, 255, 255),       //  4  YELLOW
+  CHSV(96, 255, 255),       //  5  GREEN
+  CHSV(128, 255, 255),      //  6  AQUA
+  CHSV(160, 255, 255),      //  7  BLUE
+  CHSV(192, 255, 255),      //  8  PURPLE
+  CHSV(224, 255, 255),      //  9  PINK
   CHSV(0, 255, 255),
   CHSV(0, 255, 255),
   CHSV(0, 255, 255),
@@ -97,14 +97,14 @@ typedef struct Frame {
 
 // Remember, delay is in microseconds!!!
 const Frame frames[] = {
-  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-  {1000000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
-  {1000000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+  {50000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+  {50000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
+  {500000, {0, 0, 0, 0, 0, 0, 0, 3, 0, 3}}
 };
 
 const char numFrames = 3;
 int currentFrame = 0;
-int frameTime = 0;
+long frameTime = 0;
 
 void loopSomethingElse(long elapsed) {
   frameTime += elapsed;
@@ -114,7 +114,7 @@ void loopSomethingElse(long elapsed) {
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(somethingElsePallet, frames[currentFrame].data[i] * 16);
+    leds[i] = ColorFromPalette(somethingElsePalette, frames[currentFrame].data[i] * 16);
   }
 
   // Show it
