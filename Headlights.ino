@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Hardware config
 #define LED_PIN     9
-#define NUM_LEDS    10
+#define NUM_LEDS    24
 #define LED_TYPE    NEOPIXEL
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,8 @@ CRGB leds[NUM_LEDS];
 STATE currentState = KNIGHT_RIDER;
 // Time tracking
 long lastTime = 0;
-
+int analogPin = A0;
+int potValue = 0;
 void loopSomethingElse(long elapsed);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,14 +46,13 @@ void loop() {
   long elapsed = (currentTime - lastTime);
   lastTime = currentTime;
 
-  int potValue = analogRead(A0);
-  if (potValue < 1) {
+  potValue = analogRead(analogPin);
+  if (potValue < 512) {
     currentState = KNIGHT_RIDER;
   } else {
     currentState = SOMETHING_ELSE;
   }
 
-  currentState = SOMETHING_ELSE;
   switch (currentState) {
     case KNIGHT_RIDER:
       loopKnightRider(elapsed);
@@ -97,12 +97,18 @@ typedef struct Frame {
 
 // Remember, delay is in microseconds!!!
 const Frame frames[] = {
-  {50000, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-  {50000, {1, 0, 1, 0, 1, 0, 1, 0, 0, 0}},
-  {500000, {0, 0, 0, 0, 0, 0, 0, 3, 0, 3}}
+  {100,    {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
+  {70000,  {2, 2, 7, 7, 3, 3, 0, 0, 0, 0, 2, 7, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
+  {70000,  {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
+  {70000,  {2, 2, 7, 7, 3, 3, 0, 0, 0, 0, 2, 7, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
+  {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},  
+  {70000,  {0, 0, 0, 0, 3, 3, 7, 7, 2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 7, 2, 1, 1, 1, 1}},
+  {70000,  {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
+  {70000,  {0, 0, 0, 0, 3, 3, 7, 7, 2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 7, 2, 1, 1, 1, 1}},
+  {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}}
 };
 
-const char numFrames = 3;
+const char numFrames = 9;
 int currentFrame = 0;
 long frameTime = 0;
 
