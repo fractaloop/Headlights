@@ -47,7 +47,15 @@ void loop() {
   long elapsed = (currentTime - lastTime);
   lastTime = currentTime;
 
-  potValue = analogRead(analogPin);
+  //potValue = analogRead(analogPin);
+  potValue = 0;
+    for (int i = 0; i < 32; i++) {
+    potValue += analogRead(analogPin);
+  }
+  potValue = potValue/32;
+  if (potValue <20) {
+    potValue = 0;
+  }
   if (potValue < 256) {
     currentState = STATIC_RUNNING_LIGHTS;
   } else {
@@ -137,7 +145,7 @@ void loopPatternFlasher(long elapsed) {
 //
 
 const Frame fixedpattern[] = {
-  {100,    {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3}}
+  {10000,    {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3}}
 
 };
 
