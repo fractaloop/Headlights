@@ -13,7 +13,7 @@
 // Basic state machine for different programs
 typedef enum STATE {
   KNIGHT_RIDER = 0,
-  SOMETHING_ELSE
+  PATTERN_FLASHER
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,13 +26,13 @@ STATE currentState = KNIGHT_RIDER;
 long lastTime = 0;
 int analogPin = A0;
 int potValue = 0;
-void loopSomethingElse(long elapsed);
+void loopPatternFlasher(long elapsed);
 
 ///////////////////////////////////////////////////////////////////////////////
 // LET'S DO THIS THING!
 void setup() {
   // power-up safety delay
-  delay( 3000 );
+  delay( 1000 );
 
   Serial.begin(9600);
   // initialization
@@ -50,15 +50,15 @@ void loop() {
   if (potValue < 512) {
     currentState = KNIGHT_RIDER;
   } else {
-    currentState = SOMETHING_ELSE;
+    currentState = PATTERN_FLASHER;
   }
 
   switch (currentState) {
     case KNIGHT_RIDER:
       loopKnightRider(elapsed);
       break;
-    case SOMETHING_ELSE:
-      loopSomethingElse(elapsed);
+    case PATTERN_FLASHER:
+      loopPatternFlasher(elapsed);
       break;
   }
 
@@ -67,10 +67,10 @@ void loop() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Something Else
+// PATTERN FLASHER
 //
 //
-const CHSVPalette16 somethingElsePalette(
+const CHSVPalette16 BasicPalette(
   CHSV(0, 0, 0),            //  0  BLACK
   CHSV(0, 0, 255),          //  1  WHITE
   CHSV(0, 255, 255),        //  2  RED
@@ -112,7 +112,7 @@ const char numFrames = 9;
 int currentFrame = 0;
 long frameTime = 0;
 
-void loopSomethingElse(long elapsed) {
+void loopPatternFlasher(long elapsed) {
   frameTime += elapsed;
   if (frameTime > frames[currentFrame].delay) {
     frameTime = 0;
@@ -120,7 +120,7 @@ void loopSomethingElse(long elapsed) {
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(somethingElsePalette, frames[currentFrame].data[i] * 16);
+    leds[i] = ColorFromPalette(BasicPalette, frames[currentFrame].data[i] * 16);
   }
 
   // Show it
