@@ -13,7 +13,8 @@
 // Basic state machine for different programs
 typedef enum STATE {
   KNIGHT_RIDER = 0,
-  PATTERN_FLASHER
+  PATTERN_FLASHER = 1,
+  STATIC_RUNNING_LIGHTS = 2
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,8 +48,8 @@ void loop() {
   lastTime = currentTime;
 
   potValue = analogRead(analogPin);
-  if (potValue < 512) {
-    currentState = KNIGHT_RIDER;
+  if (potValue < 256) {
+    currentState = STATIC_RUNNING_LIGHTS;
   } else {
     currentState = PATTERN_FLASHER;
   }
@@ -60,6 +61,9 @@ void loop() {
     case PATTERN_FLASHER:
       loopPatternFlasher(elapsed);
       break;
+    case STATIC_RUNNING_LIGHTS:
+      loopStaticRunningLights(elapsed);
+      break;  
   }
 
   // So we don't update too crazy fast
@@ -74,7 +78,7 @@ const CHSVPalette16 BasicPalette(
   CHSV(0, 0, 0),            //  0  BLACK
   CHSV(0, 0, 255),          //  1  WHITE
   CHSV(0, 255, 255),        //  2  RED
-  CHSV(32, 255, 255),       //  3  ORANGE  
+  CHSV(32, 255, 255),       //  3  ORANGE
   CHSV(64, 255, 255),       //  4  YELLOW
   CHSV(96, 255, 255),       //  5  GREEN
   CHSV(128, 255, 255),      //  6  AQUA
@@ -86,7 +90,7 @@ const CHSVPalette16 BasicPalette(
   CHSV(0, 255, 255),
   CHSV(0, 255, 255),
   CHSV(0, 255, 255),
-  CHSV(0, 255, 255)         
+  CHSV(0, 255, 255)
 
 );
 
@@ -96,12 +100,12 @@ typedef struct Frame {
 };
 
 // Remember, delay is in microseconds!!!
-const Frame frames[] = {
+const Frame pattern1[] = {
   {100,    {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {2, 2, 7, 7, 3, 3, 0, 0, 0, 0, 2, 7, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {2, 2, 7, 7, 3, 3, 0, 0, 0, 0, 2, 7, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
-  {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},  
+  {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {0, 0, 0, 0, 3, 3, 7, 7, 2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 7, 2, 1, 1, 1, 1}},
   {70000,  {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {0, 0, 0, 0, 3, 3, 7, 7, 2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 7, 2, 1, 1, 1, 1}},
@@ -114,18 +118,45 @@ long frameTime = 0;
 
 void loopPatternFlasher(long elapsed) {
   frameTime += elapsed;
-  if (frameTime > frames[currentFrame].delay) {
+  if (frameTime > pattern1[currentFrame].delay) {
     frameTime = 0;
     currentFrame = (currentFrame + 1) % numFrames;
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(BasicPalette, frames[currentFrame].data[i] * 16);
+    leds[i] = ColorFromPalette(BasicPalette, pattern1[currentFrame].data[i] * 16);
   }
 
   // Show it
   FastLED.show();
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//Static Running Lights
+//
+
+const Frame fixedpattern[] = {
+  {100,    {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3}}
+
+};
+
+void loopStaticRunningLights(long elapsed) {
+  frameTime += elapsed;
+  if (frameTime > fixedpattern[currentFrame].delay) {
+    frameTime = 0;
+    currentFrame = (currentFrame + 1) % numFrames;
+  }
+  // Update all the pixels from the palette
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = ColorFromPalette(BasicPalette, fixedpattern[0].data[i] * 16);
+  }
+  FastLED.setBrightness(potValue);
+  // Show it
+  FastLED.show();
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Knight Rider
