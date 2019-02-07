@@ -120,7 +120,15 @@ const Frame pattern1[] = {
   {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}}
 };
 
-const char numFrames = 9;
+const Frame pattern2[] = {
+  {70000,  {2, 2, 3, 3, 3, 3, 0, 0, 2, 2, 1, 6, 7, 6, 1, 1, 6, 7, 6, 1, 1, 6, 6, 1}},
+  {70000,  {2, 2, 0, 0, 3, 3, 3, 3, 2, 2, 1, 6, 7, 6, 1, 1, 6, 7, 6, 1, 1, 6, 6, 1}}
+
+};
+
+const char numFramesPattern1 = 9;
+const char numFramesPattern2 = 2;
+
 int currentFrame = 0;
 long frameTime = 0;
 
@@ -128,7 +136,7 @@ void loopPatternFlasher(long elapsed) {
   frameTime += elapsed;
   if (frameTime > pattern1[currentFrame].delay) {
     frameTime = 0;
-    currentFrame = (currentFrame + 1) % numFrames;
+    currentFrame = (currentFrame + 1) % numFramesPattern1;
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -149,11 +157,13 @@ const Frame fixedpattern[] = {
 
 };
 
+const char numFramesFixedPattern = 1;
+
 void loopStaticRunningLights(long elapsed) {
   frameTime += elapsed;
   if (frameTime > fixedpattern[currentFrame].delay) {
     frameTime = 0;
-    currentFrame = (currentFrame + 1) % numFrames;
+    currentFrame = (currentFrame + 1) % numFramesFixedPattern;
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
