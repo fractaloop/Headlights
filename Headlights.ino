@@ -11,10 +11,16 @@
 // Types
 
 // Basic state machine for different programs
-typedef enum STATE {
+typedef enum StateType {
   KNIGHT_RIDER = 0,
   PATTERN_FLASHER = 1,
   STATIC_RUNNING_LIGHTS = 2
+};
+
+// Patterns for pattern flasher
+typedef enum PatternType {
+  PATTERN_POLICE1 = 0,
+  PATTERN_POLICE2 = 1
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,12 +28,15 @@ typedef enum STATE {
 // Our LEDs
 CRGB leds[NUM_LEDS];
 // Current program
-STATE currentState = KNIGHT_RIDER;
+StateType currentState = KNIGHT_RIDER;
+// Current pattern
+PatternType currentPattern = PATTERN_POLICE1;
 // Time tracking
 long lastTime = 0;
 int analogPin = A0;
 int potValue = 0;
 void loopPatternFlasher(long elapsed);
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // LET'S DO THIS THING!
@@ -49,24 +58,24 @@ void loop() {
 
   //potValue = analogRead(analogPin);
   potValue = 0;
-    for (int i = 0; i < 32; i++) {
+  for (int i = 0; i < 32; i++) {
     potValue += analogRead(analogPin);
   }
-  potValue = potValue/32;
-  if (potValue <20) {
+  potValue = potValue / 32;
+  if (potValue < 20) {
     potValue = 0;
   }
   if (potValue < 256) {
     currentState = STATIC_RUNNING_LIGHTS;
-  } else if (potValue >=256 and potValue < 512) {
+  } else if (potValue >= 256 and potValue < 512) {
     currentState = PATTERN_FLASHER;
-    currentPattern = pattern1;
+    currentPattern = PATTERN_POLICE1;
   } else if (potValue >= 512 and potValue < 768) {
     currentState = PATTERN_FLASHER;
-    currentPattern = pattern2;
+    currentPattern = PATTERN_POLICE2;
   }
-     else {
-    currentState = KNIGHT_RIDER;  
+  else {
+    currentState = KNIGHT_RIDER;
   }
 
   switch (currentState) {
@@ -78,7 +87,7 @@ void loop() {
       break;
     case STATIC_RUNNING_LIGHTS:
       loopStaticRunningLights(elapsed);
-      break;  
+      break;
   }
 
   // So we don't update too crazy fast
@@ -114,8 +123,16 @@ typedef struct Frame {
   uint8_t data[NUM_LEDS];
 };
 
+typedef struct Pattern {
+  int count;
+  Frame *frames;
+};
+
 // Remember, delay is in microseconds!!!
-const Frame pattern1[] = {
+//  const char numFramesPattern1 = 9;
+//  const char numFramesPattern2 = 2;
+// PATTERN_POLICE1
+const Frame PolicePattern1[] = {
   {100,    {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {2, 2, 7, 7, 3, 3, 0, 0, 0, 0, 2, 7, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
   {70000,  {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}},
@@ -127,27 +144,29 @@ const Frame pattern1[] = {
   {200000, {0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}}
 };
 
-const Frame pattern2[] = {
+// PATTERN_POLICE2
+const Frame PolicePattern2[] = {
   {70000,  {2, 2, 3, 3, 3, 3, 0, 0, 2, 2, 1, 6, 7, 6, 1, 1, 6, 7, 6, 1, 1, 6, 6, 1}},
   {70000,  {2, 2, 0, 0, 3, 3, 3, 3, 2, 2, 1, 6, 7, 6, 1, 1, 6, 7, 6, 1, 1, 6, 6, 1}}
-
 };
 
-const char numFramesPattern1 = 9;
-const char numFramesPattern2 = 2;
+const Pattern patterns[] = {
+  {9, PolicePattern1},
+  {2, PolicePattern2}
+};
 
 int currentFrame = 0;
 long frameTime = 0;
 
 void loopPatternFlasher(long elapsed) {
   frameTime += elapsed;
-  if (frameTime > pattern1[currentFrame].delay) {
+  if (frameTime > patterns[currentPattern].frames[currentFrame].delay) {
     frameTime = 0;
-    currentFrame = (currentFrame + 1) % numFramesPattern1;
+    currentFrame = (currentFrame + 1) % patterns[currentPattern].count;
   }
   // Update all the pixels from the palette
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(BasicPalette, pattern1[currentFrame].data[i] * 16);
+    leds[i] = ColorFromPalette(BasicPalette, patterns[currentPattern].frames[currentFrame].data[i] * 16);
   }
 
   // Show it
