@@ -58,8 +58,15 @@ void loop() {
   }
   if (potValue < 256) {
     currentState = STATIC_RUNNING_LIGHTS;
-  } else {
+  } else if (potValue >=256 and potValue < 512) {
     currentState = PATTERN_FLASHER;
+    currentPattern = pattern1;
+  } else if (potValue >= 512 and potValue < 768) {
+    currentState = PATTERN_FLASHER;
+    currentPattern = pattern2;
+  }
+     else {
+    currentState = KNIGHT_RIDER;  
   }
 
   switch (currentState) {
