@@ -20,7 +20,8 @@ typedef enum StateType {
 // Patterns for pattern flasher
 typedef enum PatternType {
   PATTERN_POLICE1 = 0,
-  PATTERN_POLICE2 = 1
+  PATTERN_POLICE2 = 1,
+  PATTERN_POLICE3 = 2
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,12 +68,18 @@ void loop() {
   }
   if (potValue < 256) {
     currentState = STATIC_RUNNING_LIGHTS;
+
   } else if (potValue >= 256 and potValue < 512) {
     currentState = PATTERN_FLASHER;
     currentPattern = PATTERN_POLICE1;
+
   } else if (potValue >= 512 and potValue < 768) {
     currentState = PATTERN_FLASHER;
     currentPattern = PATTERN_POLICE2;
+
+  } else if (potValue >= 768 and potValue < 950) {
+    currentState = PATTERN_FLASHER;
+    currentPattern = PATTERN_POLICE3;
   }
   else {
     currentState = KNIGHT_RIDER;
@@ -152,9 +159,20 @@ const Frame PolicePattern2[] = {
   {150000,  {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 7, 8, 7, 1, 1, 7, 8, 7, 1, 1, 6, 6, 1}}
 };
 
+
+// PATTERN_POLICE3
+const Frame PolicePattern3[] = {
+  {250000,  {2, 2, 3, 3, 3, 3, 0, 0, 2, 2, 1, 7, 8, 7, 1, 1, 7, 8, 7, 1, 1, 6, 6, 1}},
+  {150000,  {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 7, 8, 7, 1, 1, 7, 8, 7, 1, 1, 6, 6, 1}},
+  {250000,  {2, 2, 0, 0, 3, 3, 3, 3, 2, 2, 1, 7, 8, 7, 1, 1, 7, 8, 7, 1, 1, 6, 6, 1}},  
+  {150000,  {2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 1, 7, 8, 7, 1, 1, 7, 8, 7, 1, 1, 6, 6, 1}}
+};
+
+
 const Pattern patterns[] = {
   {9, PolicePattern1},
-  {4, PolicePattern2}
+  {4, PolicePattern2},
+  {4, PolicePattern3}
 };
 
 int currentFrame = 0;
